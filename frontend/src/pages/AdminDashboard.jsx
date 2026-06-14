@@ -12,7 +12,7 @@ export default function AdminDashboard() {
 
   const fetchAnalytics = async (key) => {
     try {
-      const res = await axios.get('http://localhost:5000/api/admin/analytics', {
+      const res = await axios.get('https://samidhagbpec.onrender.com/api/admin/analytics', {
         headers: { 'x-admin-key': key }
       });
       setAnalytics(res.data);
@@ -38,7 +38,7 @@ export default function AdminDashboard() {
 
   const handleGenerateCode = async () => {
     try {
-      const res = await axios.post('http://localhost:5000/api/admin/attendance-code', {
+      const res = await axios.post('https://samidhagbpec.onrender.com/api/admin/attendance-code', {
         day_number: 1, // You could make this dynamic
         expires_in_minutes: 15
       }, {
@@ -53,7 +53,7 @@ export default function AdminDashboard() {
 
   const handleExport = async (type) => {
     try {
-      const res = await axios.get(`http://localhost:5000/api/admin/export/${type}`, {
+      const res = await axios.get(`https://samidhagbpec.onrender.com/api/admin/export/${type}`, {
         headers: { 'x-admin-key': adminKey },
         responseType: 'blob'
       });
@@ -76,7 +76,7 @@ export default function AdminDashboard() {
         setTableData([]); // Assignment API not built yet
         return;
       }
-      const res = await axios.get(`http://localhost:5000/api/admin/${type}`, {
+      const res = await axios.get(`https://samidhagbpec.onrender.com/api/admin/${type}`, {
         headers: { 'x-admin-key': adminKey }
       });
       setTableData(res.data);

@@ -16,7 +16,7 @@ export default function Attendance() {
   useEffect(() => {
     const fetchStatus = async () => {
       try {
-        const res = await axios.get('http://localhost:5000/api/attendance/status');
+        const res = await axios.get('https://samidhagbpec.onrender.com/api/attendance/status');
         setStatus(res.data.status);
       } catch (err) {
         console.error(err);
@@ -35,7 +35,7 @@ export default function Attendance() {
     setMessage('');
     setLoading(true);
     try {
-      const res = await axios.post('http://localhost:5000/api/attendance/mark', formData);
+      const res = await axios.post('https://samidhagbpec.onrender.com/api/attendance/mark', formData);
       setMessage(res.data.message);
     } catch (err) {
       setError(err.response?.data?.error || 'Failed to mark attendance.');

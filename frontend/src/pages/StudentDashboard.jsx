@@ -16,7 +16,7 @@ export default function StudentDashboard() {
     
     try {
       // Point to our local backend port 5000
-      const res = await axios.post('http://localhost:5000/api/students/profile', loginData);
+      const res = await axios.post('https://samidhagbpec.onrender.com/api/students/profile', loginData);
       setProfile(res.data);
       setIsLoggedIn(true);
     } catch (err) {

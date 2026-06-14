@@ -28,7 +28,7 @@ export default function Register() {
     setLoading(true);
     
     try {
-      const res = await axios.post('http://localhost:5000/api/students/register', formData);
+      const res = await axios.post('https://samidhagbpec.onrender.com/api/students/register', formData);
       setSuccessId(res.data.student_id);
     } catch (err) {
       setError(err.response?.data?.error || 'Registration failed. Please try again.');
