@@ -9,6 +9,7 @@ export default function AdminDashboard() {
   const [generatedCode, setGeneratedCode] = useState(null);
   const [viewingData, setViewingData] = useState(null); // 'students', 'attendance', 'assignments'
   const [tableData, setTableData] = useState([]);
+  const [dayNumber, setDayNumber] = useState(1);
 
   const fetchAnalytics = async (key) => {
     try {
@@ -39,7 +40,7 @@ export default function AdminDashboard() {
   const handleGenerateCode = async () => {
     try {
       const res = await axios.post('https://samidhagbpec.onrender.com/api/admin/attendance-code', {
-        day_number: 1, // You could make this dynamic
+        day_number: dayNumber,
         expires_in_minutes: 15
       }, {
         headers: { 'x-admin-key': adminKey }
@@ -187,9 +188,19 @@ export default function AdminDashboard() {
           </div>
         )}
 
-        <div className="flex flex-wrap gap-4">
-          <button onClick={handleGenerateCode} className="bg-samidha-blue text-white px-6 py-3 rounded-xl font-bold hover:bg-blue-700 transition">Generate Today's Code</button>
-          <button onClick={() => handleExport('attendance')} className="bg-purple-100 text-purple-700 px-6 py-3 rounded-xl font-bold hover:bg-purple-200 transition flex items-center gap-2"><Download className="w-4 h-4"/> Export Attendance CSV</button>
+        <div className="flex flex-wrap gap-4 items-end">
+          <div className="flex flex-col gap-1">
+            <label className="text-sm font-semibold text-gray-700">Day Number</label>
+            <input 
+              type="number" 
+              min="1" 
+              value={dayNumber} 
+              onChange={(e) => setDayNumber(parseInt(e.target.value))} 
+              className="w-24 p-3 border border-gray-300 rounded-xl outline-none focus:ring-2 focus:ring-samidha-blue"
+            />
+          </div>
+          <button onClick={handleGenerateCode} className="bg-samidha-blue text-white px-6 py-3 rounded-xl font-bold hover:bg-blue-700 transition h-[50px]">Generate Code</button>
+          <button onClick={() => handleExport('attendance')} className="bg-purple-100 text-purple-700 px-6 py-3 rounded-xl font-bold hover:bg-purple-200 transition flex items-center gap-2 h-[50px]"><Download className="w-4 h-4"/> Export Attendance CSV</button>
           <button onClick={() => handleExport('students')} className="bg-blue-100 text-blue-700 px-6 py-3 rounded-xl font-bold hover:bg-blue-200 transition flex items-center gap-2"><Download className="w-4 h-4"/> Export Students CSV</button>
           <button className="bg-green-100 text-green-700 px-6 py-3 rounded-xl font-bold hover:bg-green-200 transition flex items-center gap-2"><Download className="w-4 h-4"/> Generate Certificates</button>
         </div>
