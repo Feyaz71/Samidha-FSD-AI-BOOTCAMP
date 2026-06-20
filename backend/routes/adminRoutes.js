@@ -18,6 +18,8 @@ router.get('/analytics', adminController.getAnalytics);
 router.post('/attendance-code', adminController.createAttendanceCode);
 router.get('/students', adminController.getStudents);
 router.get('/attendance', adminController.getAttendance);
+router.post('/assignment-config', adminController.createAssignmentConfig);
+router.get('/assignments', adminController.getAssignments);
 router.get('/export/:type', adminController.exportCSV); // Simple CSV Export
 router.post('/certificates/generate', adminController.generateCertificates);
 

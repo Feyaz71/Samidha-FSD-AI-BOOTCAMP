@@ -2,6 +2,7 @@ const Student = require('../models/Student');
 const Attendance = require('../models/Attendance');
 const AttendanceCode = require('../models/AttendanceCode');
 const Assignment = require('../models/Assignment');
+const AssignmentConfig = require('../models/AssignmentConfig');
 const moment = require('moment');
 
 exports.getAnalytics = async (req, res) => {
@@ -55,6 +56,26 @@ exports.getAttendance = async (req, res) => {
   try {
     const attendance = await Attendance.find().sort({ createdAt: -1 });
     res.status(200).json(attendance);
+  } catch (error) {
+    res.status(500).json({ error: 'Server error' });
+  }
+};
+
+exports.createAssignmentConfig = async (req, res) => {
+  try {
+    const { title, deadline } = req.body;
+    const assignmentConfig = new AssignmentConfig({ title, deadline });
+    await assignmentConfig.save();
+    res.status(201).json({ message: 'Assignment Configuration created', assignmentConfig });
+  } catch (error) {
+    res.status(500).json({ error: 'Server error' });
+  }
+};
+
+exports.getAssignments = async (req, res) => {
+  try {
+    const assignments = await Assignment.find().sort({ submitted_at: -1 });
+    res.status(200).json(assignments);
   } catch (error) {
     res.status(500).json({ error: 'Server error' });
   }

@@ -2,6 +2,16 @@ const Assignment = require('../models/Assignment');
 const AssignmentConfig = require('../models/AssignmentConfig');
 const Student = require('../models/Student');
 
+exports.getActiveAssignments = async (req, res) => {
+  try {
+    const assignments = await AssignmentConfig.find({ is_active: true }).sort({ created_at: -1 });
+    res.status(200).json(assignments);
+  } catch (error) {
+    res.status(500).json({ error: 'Server error' });
+  }
+};
+
+
 exports.submitAssignment = async (req, res) => {
   try {
     const { student_id, assignment_title, description, github_link, live_link, file_url } = req.body;

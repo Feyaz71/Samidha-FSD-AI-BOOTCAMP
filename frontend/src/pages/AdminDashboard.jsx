@@ -10,6 +10,7 @@ export default function AdminDashboard() {
   const [viewingData, setViewingData] = useState(null); // 'students', 'attendance', 'assignments'
   const [tableData, setTableData] = useState([]);
   const [dayNumber, setDayNumber] = useState(1);
+  const [newAssignment, setNewAssignment] = useState({ title: '', deadline: '' });
 
   const fetchAnalytics = async (key) => {
     try {
@@ -73,16 +74,24 @@ export default function AdminDashboard() {
   const fetchTableData = async (type) => {
     try {
       setViewingData(type);
-      if (type === 'assignments') {
-        setTableData([]); // Assignment API not built yet
-        return;
-      }
       const res = await axios.get(`https://samidhagbpec.onrender.com/api/admin/${type}`, {
         headers: { 'x-admin-key': adminKey }
       });
       setTableData(res.data);
     } catch (err) {
       alert('Failed to fetch data');
+    }
+  };
+
+  const handleCreateAssignment = async () => {
+    try {
+      await axios.post('https://samidhagbpec.onrender.com/api/admin/assignment-config', newAssignment, {
+        headers: { 'x-admin-key': adminKey }
+      });
+      alert('Assignment created successfully!');
+      setNewAssignment({ title: '', deadline: '' });
+    } catch (err) {
+      alert('Failed to create assignment');
     }
   };
 
@@ -148,6 +157,14 @@ export default function AdminDashboard() {
                     <th className="p-3 border-b">Marked At</th>
                   </>
                 )}
+                {viewingData === 'assignments' && (
+                  <>
+                    <th className="p-3 border-b">Name</th>
+                    <th className="p-3 border-b">Assignment</th>
+                    <th className="p-3 border-b">Status</th>
+                    <th className="p-3 border-b">Links</th>
+                  </>
+                )}
               </tr>
             </thead>
             <tbody>
@@ -168,6 +185,21 @@ export default function AdminDashboard() {
                       <>
                         <td className="p-3">Day {item.day_number}</td>
                         <td className="p-3">{new Date(item.marked_at || item.createdAt).toLocaleString()}</td>
+                      </>
+                    )}
+                    {viewingData === 'assignments' && (
+                      <>
+                        <td className="p-3">{item.student_name}</td>
+                        <td className="p-3">{item.assignment_title} (v{item.version})</td>
+                        <td className="p-3">
+                          <span className={`px-2 py-1 rounded text-xs font-bold ${item.status === 'On Time' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+                            {item.status}
+                          </span>
+                        </td>
+                        <td className="p-3">
+                          {item.github_link && <a href={item.github_link} target="_blank" rel="noreferrer" className="text-blue-500 hover:underline mr-2">GitHub</a>}
+                          {item.live_link && <a href={item.live_link} target="_blank" rel="noreferrer" className="text-blue-500 hover:underline">Live</a>}
+                        </td>
                       </>
                     )}
                   </tr>
@@ -204,6 +236,33 @@ export default function AdminDashboard() {
           <button onClick={() => handleExport('students')} className="bg-blue-100 text-blue-700 px-6 py-3 rounded-xl font-bold hover:bg-blue-200 transition flex items-center gap-2"><Download className="w-4 h-4"/> Export Students CSV</button>
           <button className="bg-green-100 text-green-700 px-6 py-3 rounded-xl font-bold hover:bg-green-200 transition flex items-center gap-2"><Download className="w-4 h-4"/> Generate Certificates</button>
         </div>
+
+        <div className="mt-8 border-t pt-6">
+          <h3 className="text-lg font-bold mb-4">Create New Assignment</h3>
+          <div className="flex flex-wrap gap-4 items-end">
+            <div className="flex flex-col gap-1 w-full md:w-auto">
+              <label className="text-sm font-semibold text-gray-700">Assignment Title</label>
+              <input 
+                type="text" 
+                value={newAssignment.title} 
+                onChange={(e) => setNewAssignment({...newAssignment, title: e.target.value})} 
+                className="w-full md:w-64 p-3 border border-gray-300 rounded-xl outline-none focus:ring-2 focus:ring-samidha-blue"
+                placeholder="Day 4 - React Basics"
+              />
+            </div>
+            <div className="flex flex-col gap-1 w-full md:w-auto">
+              <label className="text-sm font-semibold text-gray-700">Deadline</label>
+              <input 
+                type="datetime-local" 
+                value={newAssignment.deadline} 
+                onChange={(e) => setNewAssignment({...newAssignment, deadline: e.target.value})} 
+                className="w-full md:w-48 p-3 border border-gray-300 rounded-xl outline-none focus:ring-2 focus:ring-samidha-blue"
+              />
+            </div>
+            <button onClick={handleCreateAssignment} className="bg-green-600 text-white px-6 py-3 rounded-xl font-bold hover:bg-green-700 transition h-[50px] w-full md:w-auto">Create Assignment</button>
+          </div>
+        </div>
+
       </div>
     </div>
   );

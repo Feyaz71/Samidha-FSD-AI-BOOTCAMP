@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { UploadCloud, ArrowRight } from 'lucide-react';
+import axios from 'axios';
 
 export default function Assignment() {
   const [formData, setFormData] = useState({
@@ -11,6 +12,19 @@ export default function Assignment() {
   });
   const [file, setFile] = useState(null);
   const [message, setMessage] = useState('');
+  const [activeAssignments, setActiveAssignments] = useState([]);
+
+  useEffect(() => {
+    const fetchActive = async () => {
+      try {
+        const res = await axios.get('https://samidhagbpec.onrender.com/api/assignments/active');
+        setActiveAssignments(res.data);
+      } catch (err) {
+        console.error('Failed to fetch assignments');
+      }
+    };
+    fetchActive();
+  }, []);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -18,8 +32,19 @@ export default function Assignment() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // MOCK SUBMISSION
-    setMessage('Assignment Submitted Successfully!');
+    try {
+      const res = await axios.post('https://samidhagbpec.onrender.com/api/assignments/submit', formData);
+      setMessage(res.data.message || 'Assignment Submitted Successfully!');
+      setFormData({
+        student_id: '',
+        assignment_title: '',
+        description: '',
+        github_link: '',
+        live_link: ''
+      });
+    } catch (err) {
+      setMessage(err.response?.data?.error || 'Submission failed');
+    }
   };
 
   return (
@@ -41,32 +66,32 @@ export default function Assignment() {
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Student ID</label>
-            <input required type="text" name="student_id" onChange={handleChange} className="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 uppercase outline-none" placeholder="SAM2026-001" />
+            <input required type="text" name="student_id" value={formData.student_id} onChange={handleChange} className="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 uppercase outline-none" placeholder="SAM2026-001" />
           </div>
           
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Assignment Title</label>
-            <select required name="assignment_title" onChange={handleChange} className="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 outline-none">
+            <select required name="assignment_title" value={formData.assignment_title} onChange={handleChange} className="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 outline-none">
               <option value="">Select Assignment</option>
-              <option value="Day 1 - Portfolio HTML">Day 1 - Portfolio HTML</option>
-              <option value="Day 2 - CSS Styling">Day 2 - CSS Styling</option>
-              <option value="Day 3 - Javascript Basics">Day 3 - Javascript Basics</option>
+              {activeAssignments.map((a, i) => (
+                <option key={i} value={a.title}>{a.title} (Due: {new Date(a.deadline).toLocaleDateString()})</option>
+              ))}
             </select>
           </div>
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Description (Optional)</label>
-            <textarea name="description" onChange={handleChange} className="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 outline-none" rows="2" placeholder="Any notes for the mentor..."></textarea>
+            <textarea name="description" value={formData.description} onChange={handleChange} className="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 outline-none" rows="2" placeholder="Any notes for the mentor..."></textarea>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">GitHub Link (Optional)</label>
-              <input type="url" name="github_link" onChange={handleChange} className="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 outline-none" placeholder="https://github.com/..." />
+              <input type="url" name="github_link" value={formData.github_link} onChange={handleChange} className="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 outline-none" placeholder="https://github.com/..." />
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Live Link (Optional)</label>
-              <input type="url" name="live_link" onChange={handleChange} className="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 outline-none" placeholder="https://..." />
+              <input type="url" name="live_link" value={formData.live_link} onChange={handleChange} className="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 outline-none" placeholder="https://..." />
             </div>
           </div>
 
