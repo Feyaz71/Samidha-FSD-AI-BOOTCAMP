@@ -39,9 +39,13 @@ export default function AdminDashboard() {
   };
 
   const handleGenerateCode = async () => {
+    if (!dayNumber || isNaN(dayNumber)) {
+      alert('Please enter a valid day number');
+      return;
+    }
     try {
       const res = await axios.post('https://samidhagbpec.onrender.com/api/admin/attendance-code', {
-        day_number: dayNumber,
+        day_number: parseInt(dayNumber),
         expires_in_minutes: 15
       }, {
         headers: { 'x-admin-key': adminKey }
@@ -227,7 +231,7 @@ export default function AdminDashboard() {
               type="number" 
               min="1" 
               value={dayNumber} 
-              onChange={(e) => setDayNumber(parseInt(e.target.value))} 
+              onChange={(e) => setDayNumber(e.target.value === '' ? '' : parseInt(e.target.value))} 
               className="w-24 p-3 border border-gray-300 rounded-xl outline-none focus:ring-2 focus:ring-samidha-blue"
             />
           </div>
