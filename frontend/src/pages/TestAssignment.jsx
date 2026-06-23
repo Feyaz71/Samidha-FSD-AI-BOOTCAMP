@@ -77,7 +77,7 @@ export default function TestAssignment() {
       const res = await axios.post('https://samidhagbpec.onrender.com/api/attendance/mark', {
         student_id: formData.student_id,
         mobile: mobile,
-        otp_code: inlineOtp
+        code: inlineOtp
       });
       setOtpMessage('✅ ' + res.data.message);
     } catch (err) {
