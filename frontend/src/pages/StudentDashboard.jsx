@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { BookOpen, CheckCircle, GraduationCap, ArrowRight, AlertCircle } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { BookOpen, CheckCircle, GraduationCap, ArrowRight, AlertCircle, Calendar, FileText } from 'lucide-react';
 import axios from 'axios';
 
 export default function StudentDashboard() {
