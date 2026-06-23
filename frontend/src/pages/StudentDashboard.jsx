@@ -62,6 +62,32 @@ export default function StudentDashboard() {
         </div>
       </div>
 
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <Link to="/attendance" className="bg-gradient-to-br from-purple-500 to-indigo-600 p-6 rounded-2xl text-white shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col items-center justify-center group">
+          <div className="bg-white/20 p-4 rounded-full mb-4 group-hover:scale-110 transition-transform">
+            <Calendar className="w-8 h-8" />
+          </div>
+          <h3 className="text-xl font-bold">Mark Attendance</h3>
+          <p className="text-purple-100 text-sm mt-2 text-center">Enter your daily code</p>
+        </Link>
+
+        <Link to="/assignment" className="bg-gradient-to-br from-blue-500 to-cyan-600 p-6 rounded-2xl text-white shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col items-center justify-center group">
+          <div className="bg-white/20 p-4 rounded-full mb-4 group-hover:scale-110 transition-transform">
+            <FileText className="w-8 h-8" />
+          </div>
+          <h3 className="text-xl font-bold">Submit Assignment</h3>
+          <p className="text-blue-100 text-sm mt-2 text-center">Upload your daily tasks</p>
+        </Link>
+
+        <Link to="/test-assignment" className="bg-gradient-to-br from-rose-500 to-red-600 p-6 rounded-2xl text-white shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col items-center justify-center group">
+          <div className="bg-white/20 p-4 rounded-full mb-4 group-hover:scale-110 transition-transform">
+            <FileText className="w-8 h-8" />
+          </div>
+          <h3 className="text-xl font-bold">Submit Test</h3>
+          <p className="text-rose-100 text-sm mt-2 text-center">Live tests with OTP Queue</p>
+        </Link>
+      </div>
+
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100 flex items-center gap-6">
           <div className="bg-blue-50 p-4 rounded-full">
