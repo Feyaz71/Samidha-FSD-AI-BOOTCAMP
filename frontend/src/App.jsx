@@ -4,6 +4,7 @@ import Home from './pages/Home';
 import Register from './pages/Register';
 import Attendance from './pages/Attendance';
 import Assignment from './pages/Assignment';
+import TestAssignment from './pages/TestAssignment';
 import StudentDashboard from './pages/StudentDashboard';
 import AdminDashboard from './pages/AdminDashboard';
 
@@ -31,6 +32,7 @@ function App() {
             <Route path="/register" element={<Register />} />
             <Route path="/attendance" element={<Attendance />} />
             <Route path="/assignment" element={<Assignment />} />
+            <Route path="/test-assignment" element={<TestAssignment />} />
             <Route path="/student" element={<StudentDashboard />} />
             <Route path="/teacher" element={<AdminDashboard />} />
           </Routes>

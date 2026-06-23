@@ -20,6 +20,11 @@ router.get('/students', adminController.getStudents);
 router.get('/attendance', adminController.getAttendance);
 router.post('/assignment-config', adminController.createAssignmentConfig);
 router.get('/assignments', adminController.getAssignments);
+
+// Test Assignment Routes
+router.post('/test-assignment', adminController.createTestAssignmentConfig);
+router.get('/test-assignments', adminController.getTestAssignments);
+
 router.get('/export/:type', adminController.exportCSV); // Simple CSV Export
 router.post('/certificates/generate', adminController.generateCertificates);
 

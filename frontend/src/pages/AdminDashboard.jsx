@@ -11,6 +11,7 @@ export default function AdminDashboard() {
   const [tableData, setTableData] = useState([]);
   const [dayNumber, setDayNumber] = useState(1);
   const [newAssignment, setNewAssignment] = useState({ title: '', deadline: '' });
+  const [newTestAssignment, setNewTestAssignment] = useState({ title: '', duration_hours: '', start_time: '' });
 
   const fetchAnalytics = async (key) => {
     try {
@@ -96,6 +97,18 @@ export default function AdminDashboard() {
       setNewAssignment({ title: '', deadline: '' });
     } catch (err) {
       alert('Failed to create assignment');
+    }
+  };
+
+  const handleCreateTestAssignment = async () => {
+    try {
+      await axios.post('https://samidhagbpec.onrender.com/api/admin/test-assignment', newTestAssignment, {
+        headers: { 'x-admin-key': adminKey }
+      });
+      alert('Test Assignment created successfully!');
+      setNewTestAssignment({ title: '', duration_hours: '', start_time: '' });
+    } catch (err) {
+      alert('Failed to create test assignment');
     }
   };
 
@@ -264,6 +277,42 @@ export default function AdminDashboard() {
               />
             </div>
             <button onClick={handleCreateAssignment} className="bg-green-600 text-white px-6 py-3 rounded-xl font-bold hover:bg-green-700 transition h-[50px] w-full md:w-auto">Create Assignment</button>
+          </div>
+        </div>
+
+        <div className="mt-8 border-t pt-6">
+          <h3 className="text-lg font-bold mb-4 text-purple-700">Create New TEST Assignment (With Queue)</h3>
+          <div className="flex flex-wrap gap-4 items-end">
+            <div className="flex flex-col gap-1 w-full md:w-auto">
+              <label className="text-sm font-semibold text-gray-700">Test Title</label>
+              <input 
+                type="text" 
+                value={newTestAssignment.title} 
+                onChange={(e) => setNewTestAssignment({...newTestAssignment, title: e.target.value})} 
+                className="w-full md:w-64 p-3 border border-purple-300 rounded-xl outline-none focus:ring-2 focus:ring-purple-500"
+                placeholder="Mega Test - React"
+              />
+            </div>
+            <div className="flex flex-col gap-1 w-full md:w-auto">
+              <label className="text-sm font-semibold text-gray-700">Start Time</label>
+              <input 
+                type="datetime-local" 
+                value={newTestAssignment.start_time} 
+                onChange={(e) => setNewTestAssignment({...newTestAssignment, start_time: e.target.value})} 
+                className="w-full md:w-48 p-3 border border-purple-300 rounded-xl outline-none focus:ring-2 focus:ring-purple-500"
+              />
+            </div>
+            <div className="flex flex-col gap-1 w-full md:w-auto">
+              <label className="text-sm font-semibold text-gray-700">Duration (Hrs)</label>
+              <input 
+                type="number" 
+                value={newTestAssignment.duration_hours} 
+                onChange={(e) => setNewTestAssignment({...newTestAssignment, duration_hours: e.target.value})} 
+                className="w-full md:w-24 p-3 border border-purple-300 rounded-xl outline-none focus:ring-2 focus:ring-purple-500"
+                placeholder="2"
+              />
+            </div>
+            <button onClick={handleCreateTestAssignment} className="bg-purple-600 text-white px-6 py-3 rounded-xl font-bold hover:bg-purple-700 transition h-[50px] w-full md:w-auto">Create Test</button>
           </div>
         </div>
 
