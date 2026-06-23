@@ -102,7 +102,11 @@ export default function AdminDashboard() {
 
   const handleCreateTestAssignment = async () => {
     try {
-      await axios.post('https://samidhagbpec.onrender.com/api/admin/test-assignment', newTestAssignment, {
+      const payload = {
+        ...newTestAssignment,
+        start_time: new Date(newTestAssignment.start_time).toISOString()
+      };
+      await axios.post('https://samidhagbpec.onrender.com/api/admin/test-assignment', payload, {
         headers: { 'x-admin-key': adminKey }
       });
       alert('Test Assignment created successfully!');

@@ -32,7 +32,9 @@ exports.submitTestAssignment = async (req, res) => {
     const now = Date.now();
 
     let isLate = false;
-    if (now > endTime || now < startTime) {
+    if (now < startTime) {
+      return res.status(400).json({ error: 'This Test Assignment has not started yet.' });
+    } else if (now > endTime) {
       isLate = true;
     }
 
