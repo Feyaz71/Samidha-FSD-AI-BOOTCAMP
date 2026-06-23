@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { CheckCircle, ArrowRight } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 export default function Attendance() {
@@ -12,8 +13,17 @@ export default function Attendance() {
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
+    const sid = localStorage.getItem('samidhaStudentId');
+    const mob = localStorage.getItem('samidhaStudentMobile');
+    if (!sid || !mob) {
+      navigate('/student');
+      return;
+    }
+    setFormData(prev => ({ ...prev, student_id: sid, mobile: mob }));
+
     const fetchStatus = async () => {
       try {
         const res = await axios.get('https://samidhagbpec.onrender.com/api/attendance/status');
@@ -71,14 +81,9 @@ export default function Attendance() {
         )}
 
         <form onSubmit={handleSubmit} className="space-y-5">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Student ID</label>
-            <input required type="text" name="student_id" onChange={handleChange} className="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-samidha-blue focus:border-transparent outline-none uppercase" placeholder="SAM2026-001" disabled={status !== 'OPEN'} />
-          </div>
-          
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Mobile Number (Last 4 Digits or Full)</label>
-            <input required type="text" name="mobile" onChange={handleChange} className="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-samidha-blue focus:border-transparent outline-none" placeholder="1234" disabled={status !== 'OPEN'} />
+          <div className="bg-blue-50 p-3 rounded-xl border border-blue-200">
+            <span className="text-sm font-medium text-gray-500">Marking attendance for:</span>
+            <span className="ml-2 font-bold text-blue-900 uppercase">{formData.student_id}</span>
           </div>
 
           <div>

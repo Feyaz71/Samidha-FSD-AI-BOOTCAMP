@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { UploadCloud, ArrowRight } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 export default function Assignment() {
@@ -13,8 +14,16 @@ export default function Assignment() {
   const [file, setFile] = useState(null);
   const [message, setMessage] = useState('');
   const [activeAssignments, setActiveAssignments] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
+    const sid = localStorage.getItem('samidhaStudentId');
+    if (!sid) {
+      navigate('/student');
+      return;
+    }
+    setFormData(prev => ({ ...prev, student_id: sid }));
+
     const fetchActive = async () => {
       try {
         const res = await axios.get('https://samidhagbpec.onrender.com/api/assignments/active');
@@ -64,9 +73,9 @@ export default function Assignment() {
         )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Student ID</label>
-            <input required type="text" name="student_id" value={formData.student_id} onChange={handleChange} className="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 uppercase outline-none" placeholder="SAM2026-001" />
+          <div className="bg-gray-50 p-3 rounded-xl border border-gray-200">
+            <span className="text-sm font-medium text-gray-500">Submitting as:</span>
+            <span className="ml-2 font-bold text-gray-800 uppercase">{formData.student_id}</span>
           </div>
           
           <div>

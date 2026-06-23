@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { BookOpen, CheckCircle, GraduationCap, ArrowRight, AlertCircle, Calendar, FileText } from 'lucide-react';
+import { BookOpen, CheckCircle, GraduationCap, ArrowRight, AlertCircle, Calendar, FileText, LogOut } from 'lucide-react';
 import axios from 'axios';
 
 export default function StudentDashboard() {
@@ -8,24 +8,54 @@ export default function StudentDashboard() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [profile, setProfile] = useState(null);
   const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
-  const handleLogin = async (e) => {
-    e.preventDefault();
-    setError('');
-    setLoading(true);
-    
+  useEffect(() => {
+    const savedSession = localStorage.getItem('samidhaStudentSession');
+    if (savedSession) {
+      const data = JSON.parse(savedSession);
+      setLoginData(data);
+      fetchProfile(data);
+    } else {
+      setLoading(false);
+    }
+  }, []);
+
+  const fetchProfile = async (data) => {
     try {
-      // Point to our local backend port 5000
-      const res = await axios.post('https://samidhagbpec.onrender.com/api/students/profile', loginData);
+      const res = await axios.post('https://samidhagbpec.onrender.com/api/students/profile', data);
       setProfile(res.data);
       setIsLoggedIn(true);
+      localStorage.setItem('samidhaStudentSession', JSON.stringify(data));
+      localStorage.setItem('samidhaStudentId', data.student_id);
+      localStorage.setItem('samidhaStudentMobile', data.mobile_or_email);
     } catch (err) {
+      localStorage.removeItem('samidhaStudentSession');
       setError(err.response?.data?.error || 'Failed to fetch profile. Please check credentials.');
     } finally {
       setLoading(false);
     }
   };
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setError('');
+    setLoading(true);
+    fetchProfile(loginData);
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('samidhaStudentSession');
+    localStorage.removeItem('samidhaStudentId');
+    localStorage.removeItem('samidhaStudentMobile');
+    setIsLoggedIn(false);
+    setProfile(null);
+    setLoginData({ student_id: '', mobile_or_email: '' });
+  };
+
+  if (loading && !profile) {
+    return <div className="flex flex-col items-center justify-center py-12"><p className="text-gray-500 font-semibold">Loading session...</p></div>;
+  }
 
   if (!isLoggedIn) {
     return (
@@ -51,7 +81,12 @@ export default function StudentDashboard() {
       <div className="bg-gradient-to-r from-samidha-purple to-samidha-blue rounded-3xl p-8 text-white shadow-xl mb-8 flex justify-between items-center flex-wrap gap-4">
         <div>
           <h2 className="text-3xl font-bold mb-1">Welcome, {profile.student.full_name}!</h2>
-          <p className="text-purple-100">{profile.student.student_id}</p>
+          <div className="flex items-center gap-4">
+            <p className="text-purple-100">{profile.student.student_id}</p>
+            <button onClick={handleLogout} className="text-xs bg-red-500/20 hover:bg-red-500/40 px-3 py-1 rounded-full flex items-center gap-1 transition-colors">
+              <LogOut className="w-3 h-3" /> Logout
+            </button>
+          </div>
         </div>
         <div className="bg-white/20 backdrop-blur-md px-6 py-3 rounded-2xl border border-white/30">
           <p className="text-sm text-purple-100 uppercase tracking-wider font-semibold">Eligibility</p>

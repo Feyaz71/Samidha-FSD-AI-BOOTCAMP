@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { UploadCloud, ArrowRight, Loader } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 export default function TestAssignment() {
@@ -15,8 +16,19 @@ export default function TestAssignment() {
   const [activeTestAssignments, setActiveTestAssignments] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [otpData, setOtpData] = useState(null);
+  const [inlineOtp, setInlineOtp] = useState('');
+  const [otpMessage, setOtpMessage] = useState('');
+  const [otpSubmitting, setOtpSubmitting] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
+    const sid = localStorage.getItem('samidhaStudentId');
+    if (!sid) {
+      navigate('/student');
+      return;
+    }
+    setFormData(prev => ({ ...prev, student_id: sid }));
+
     const fetchActive = async () => {
       try {
         const res = await axios.get('https://samidhagbpec.onrender.com/api/test-assignments/active');
@@ -48,11 +60,30 @@ export default function TestAssignment() {
       } else {
         setMessage(res.data.message || 'Assignment Submitted Successfully!');
       }
-      setFormData({ student_id: '', assignment_title: '', description: '', github_link: '', live_link: '' });
+      setFormData({ student_id: formData.student_id, assignment_title: '', description: '', github_link: '', live_link: '' });
     } catch (err) {
       setMessage(err.response?.data?.error || 'Submission failed');
     } finally {
       setIsSubmitting(false);
+    }
+  };
+
+  const handleInlineOtpSubmit = async (e) => {
+    e.preventDefault();
+    setOtpSubmitting(true);
+    setOtpMessage('');
+    try {
+      const mobile = localStorage.getItem('samidhaStudentMobile');
+      const res = await axios.post('https://samidhagbpec.onrender.com/api/attendance/mark', {
+        student_id: formData.student_id,
+        mobile: mobile,
+        otp_code: inlineOtp
+      });
+      setOtpMessage('✅ ' + res.data.message);
+    } catch (err) {
+      setOtpMessage('❌ ' + (err.response?.data?.error || 'Attendance failed'));
+    } finally {
+      setOtpSubmitting(false);
     }
   };
 
@@ -77,15 +108,25 @@ export default function TestAssignment() {
           <div className="bg-green-50 p-6 rounded-xl text-center mb-6 border-2 border-green-500 shadow-sm">
             <h3 className="text-green-800 font-bold mb-2">Assignment Submitted on Time!</h3>
             <p className="text-sm text-gray-600 mb-4">Your Attendance OTP is ready. It will expire in exactly 2 minutes!</p>
-            <div className="text-5xl font-black text-green-600 tracking-widest">{otpData.otp}</div>
-            <p className="text-xs text-red-500 mt-4 font-bold animate-pulse">DO NOT CLOSE THIS WINDOW. GO MARK ATTENDANCE NOW!</p>
+            <div className="text-5xl font-black text-green-600 tracking-widest mb-4">{otpData.otp}</div>
+            
+            <div className="bg-white p-4 rounded-xl border border-green-200">
+              <p className="text-sm font-bold text-gray-700 mb-2">Mark Attendance Now</p>
+              <form onSubmit={handleInlineOtpSubmit} className="flex gap-2">
+                 <input type="text" value={inlineOtp} onChange={(e) => setInlineOtp(e.target.value)} placeholder="Enter OTP" className="flex-1 p-2 border border-gray-300 rounded-lg text-center font-bold tracking-widest focus:ring-2 focus:ring-green-500 outline-none" required />
+                 <button type="submit" disabled={otpSubmitting} className="bg-green-600 text-white px-4 py-2 rounded-lg font-bold hover:bg-green-700 disabled:opacity-50">
+                   {otpSubmitting ? 'Verifying...' : 'Submit OTP'}
+                 </button>
+              </form>
+              {otpMessage && <p className="mt-3 text-sm font-semibold">{otpMessage}</p>}
+            </div>
           </div>
         )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Student ID</label>
-            <input required type="text" name="student_id" value={formData.student_id} onChange={handleChange} className="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 uppercase outline-none" placeholder="SAM2026-001" disabled={isSubmitting} />
+          <div className="bg-purple-50 p-3 rounded-xl border border-purple-200">
+            <span className="text-sm font-medium text-gray-500">Submitting as:</span>
+            <span className="ml-2 font-bold text-purple-900 uppercase">{formData.student_id}</span>
           </div>
           
           <div>
