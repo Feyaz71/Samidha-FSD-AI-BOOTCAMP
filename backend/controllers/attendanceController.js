@@ -5,7 +5,7 @@ const AttendanceLock = require('../models/AttendanceLock');
 
 exports.getAttendanceStatus = async (req, res) => {
   try {
-    const activeCode = await AttendanceCode.findOne({ is_active: true, expires_at: { $gt: new Date() } });
+    const activeCode = await AttendanceCode.findOne({ is_active: true, expires_at: { $gt: new Date() } }).lean();
     if (activeCode) {
       res.status(200).json({ status: 'OPEN' });
     } else {
@@ -23,7 +23,7 @@ exports.markAttendance = async (req, res) => {
     const user_agent = req.headers['user-agent'];
 
     // Verify student exists
-    const student = await Student.findOne({ student_id });
+    const student = await Student.findOne({ student_id }).lean();
     if (!student || !student.mobile.endsWith(mobile)) {
       return res.status(400).json({ error: 'Invalid Student ID or Mobile Number.' });
     }
@@ -53,7 +53,7 @@ exports.markAttendance = async (req, res) => {
         code, 
         is_active: true,
         createdAt: { $gte: today } 
-      });
+      }).lean();
 
       if (attendanceCode) {
         isVerified = true;
@@ -70,7 +70,7 @@ exports.markAttendance = async (req, res) => {
       const alreadyMarked = await Attendance.findOne({ 
         student_id, 
         day_number: dayNumber 
-      });
+      }).lean();
       if (alreadyMarked) {
         return res.status(400).json({ error: 'Attendance already marked for this day.' });
       }

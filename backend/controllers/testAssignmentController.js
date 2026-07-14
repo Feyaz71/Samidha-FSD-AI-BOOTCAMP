@@ -5,7 +5,7 @@ const Student = require('../models/Student');
 
 exports.getActiveTestAssignments = async (req, res) => {
   try {
-    const assignments = await TestAssignmentConfig.find({ is_active: true }).sort({ created_at: -1 });
+    const assignments = await TestAssignmentConfig.find({ is_active: true }).sort({ created_at: -1 }).lean();
     res.status(200).json(assignments);
   } catch (error) {
     res.status(500).json({ error: 'Server error' });
@@ -16,12 +16,12 @@ exports.submitTestAssignment = async (req, res) => {
   try {
     const { student_id, assignment_title, description, github_link, live_link, file_url } = req.body;
 
-    const student = await Student.findOne({ student_id });
+    const student = await Student.findOne({ student_id }).lean();
     if (!student) {
       return res.status(400).json({ error: 'Invalid Student ID.' });
     }
 
-    const config = await TestAssignmentConfig.findOne({ title: assignment_title, is_active: true });
+    const config = await TestAssignmentConfig.findOne({ title: assignment_title, is_active: true }).lean();
     if (!config) {
       return res.status(400).json({ error: 'Invalid Test Assignment.' });
     }
@@ -62,25 +62,7 @@ exports.submitTestAssignment = async (req, res) => {
       });
     }
 
-    // Queue logic for On Time submission
-    // We will poll until no PENDING lock exists
-    let lockAcquired = false;
-    let attempts = 0;
-    while (!lockAcquired && attempts < 60) { // Wait max 120 seconds
-      const existingLock = await AttendanceLock.findOne({ status: 'PENDING', expires_at: { $gt: new Date() } });
-      if (!existingLock) {
-        lockAcquired = true;
-        break;
-      }
-      await new Promise(r => setTimeout(r, 2000));
-      attempts++;
-    }
-
-    if (!lockAcquired) {
-       return res.status(503).json({ error: 'Server too busy handling other attendances. Please try submitting again.' });
-    }
-
-    // Acquire lock and generate OTP
+    // Acquire lock and generate OTP (Non-blocking for scalability)
     const otp = Math.floor(10000 + Math.random() * 90000).toString();
     const expiresAt = new Date(Date.now() + 2 * 60 * 1000); // 2 mins from now
     

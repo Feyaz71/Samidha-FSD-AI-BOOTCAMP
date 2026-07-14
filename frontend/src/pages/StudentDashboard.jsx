@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { BookOpen, CheckCircle, GraduationCap, ArrowRight, AlertCircle, Calendar, FileText, LogOut } from 'lucide-react';
-import axios from 'axios';
+import api from '../api';
 
 export default function StudentDashboard() {
   const [loginData, setLoginData] = useState({ student_id: '', mobile_or_email: '' });
@@ -23,12 +23,12 @@ export default function StudentDashboard() {
 
   const fetchProfile = async (data) => {
     try {
-      const res = await axios.post('https://samidhagbpec.onrender.com/api/students/profile', data);
+      const res = await api.post('/students/profile', data);
       setProfile(res.data);
       setIsLoggedIn(true);
       localStorage.setItem('samidhaStudentSession', JSON.stringify(data));
       localStorage.setItem('samidhaStudentId', data.student_id);
-      localStorage.setItem('samidhaStudentMobile', data.mobile_or_email);
+      localStorage.setItem('samidhaStudentMobile', res.data.student.mobile);
     } catch (err) {
       localStorage.removeItem('samidhaStudentSession');
       setError(err.response?.data?.error || 'Failed to fetch profile. Please check credentials.');

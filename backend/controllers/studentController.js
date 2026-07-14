@@ -15,7 +15,7 @@ exports.registerStudent = async (req, res) => {
     if (email) query.push({ email });
     if (mobile) query.push({ mobile });
 
-    const existingStudent = await Student.findOne({ $or: query });
+    const existingStudent = await Student.findOne({ $or: query }).lean();
     if (existingStudent) {
       return res.status(400).json({ error: 'Student with this email or mobile already exists.' });
     }
@@ -49,14 +49,14 @@ exports.getStudentProfile = async (req, res) => {
     const student = await Student.findOne({ 
       student_id, 
       $or: [{ mobile: mobile_or_email }, { email: mobile_or_email }]
-    });
+    }).lean();
     
     if (!student) {
       return res.status(404).json({ error: 'Student not found or incorrect credential.' });
     }
 
-    const attendanceRecords = await Attendance.find({ student_id });
-    const assignmentRecords = await Assignment.find({ student_id });
+    const attendanceRecords = await Attendance.find({ student_id }).lean();
+    const assignmentRecords = await Assignment.find({ student_id }).lean();
 
     // Calculate basic stats
     const totalClasses = 15; // Assume 15 for now, or fetch from Settings

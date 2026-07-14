@@ -9,4 +9,6 @@ const attendanceSchema = new mongoose.Schema({
   user_agent: { type: String }
 });
 
+attendanceSchema.index({ student_id: 1, day_number: 1 });
+
 module.exports = mongoose.model('Attendance', attendanceSchema);

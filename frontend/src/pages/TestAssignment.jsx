@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { UploadCloud, ArrowRight, Loader } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import api from '../api';
 
 export default function TestAssignment() {
   const [formData, setFormData] = useState({
@@ -31,7 +31,7 @@ export default function TestAssignment() {
 
     const fetchActive = async () => {
       try {
-        const res = await axios.get('https://samidhagbpec.onrender.com/api/test-assignments/active');
+        const res = await api.get('/test-assignments/active');
         setActiveTestAssignments(res.data);
       } catch (err) {
         console.error('Failed to fetch test assignments');
@@ -50,7 +50,7 @@ export default function TestAssignment() {
     setMessage('');
     setOtpData(null);
     try {
-      const res = await axios.post('https://samidhagbpec.onrender.com/api/test-assignments/submit', formData);
+      const res = await api.post('/test-assignments/submit', formData);
       if (res.data.has_otp) {
         setOtpData({
           otp: res.data.otp,
@@ -74,7 +74,7 @@ export default function TestAssignment() {
     setOtpMessage('');
     try {
       const mobile = localStorage.getItem('samidhaStudentMobile');
-      const res = await axios.post('https://samidhagbpec.onrender.com/api/attendance/mark', {
+      const res = await api.post('/attendance/mark', {
         student_id: formData.student_id,
         mobile: mobile,
         code: inlineOtp

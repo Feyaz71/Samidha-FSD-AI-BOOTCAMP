@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { UploadCloud, ArrowRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import api from '../api';
 
 export default function Assignment() {
   const [formData, setFormData] = useState({
@@ -26,7 +26,7 @@ export default function Assignment() {
 
     const fetchActive = async () => {
       try {
-        const res = await axios.get('https://samidhagbpec.onrender.com/api/assignments/active');
+        const res = await api.get('/assignments/active');
         setActiveAssignments(res.data);
       } catch (err) {
         console.error('Failed to fetch assignments');
@@ -42,7 +42,7 @@ export default function Assignment() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post('https://samidhagbpec.onrender.com/api/assignments/submit', formData);
+      const res = await api.post('/assignments/submit', formData);
       setMessage(res.data.message || 'Assignment Submitted Successfully!');
       setFormData({
         student_id: '',

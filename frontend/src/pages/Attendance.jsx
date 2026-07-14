@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { CheckCircle, ArrowRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import api from '../api';
 
 export default function Attendance() {
   const [formData, setFormData] = useState({
@@ -26,7 +26,7 @@ export default function Attendance() {
 
     const fetchStatus = async () => {
       try {
-        const res = await axios.get('https://samidhagbpec.onrender.com/api/attendance/status');
+        const res = await api.get('/attendance/status');
         setStatus(res.data.status);
       } catch (err) {
         console.error(err);
@@ -45,7 +45,7 @@ export default function Attendance() {
     setMessage('');
     setLoading(true);
     try {
-      const res = await axios.post('https://samidhagbpec.onrender.com/api/attendance/mark', formData);
+      const res = await api.post('/attendance/mark', formData);
       setMessage(res.data.message);
     } catch (err) {
       setError(err.response?.data?.error || 'Failed to mark attendance.');
