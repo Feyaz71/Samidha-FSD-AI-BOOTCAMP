@@ -1,7 +1,15 @@
 import { Link } from 'react-router-dom';
-import { UserPlus, CheckCircle, UploadCloud, LayoutDashboard } from 'lucide-react';
+import { UserPlus, LayoutDashboard } from 'lucide-react';
+import { useEffect } from 'react';
 
 export default function Home() {
+  useEffect(() => {
+    // Automatically logout if student navigates to the home page
+    localStorage.removeItem('samidhaStudentSession');
+    localStorage.removeItem('samidhaStudentId');
+    localStorage.removeItem('samidhaStudentMobile');
+  }, []);
+
   return (
     <div className="flex flex-col items-center justify-center py-12">
       <div className="text-center mb-12">
@@ -11,7 +19,7 @@ export default function Home() {
         <p className="text-xl text-gray-600">Your portal for attendance, assignments, and certificates.</p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 w-full max-w-6xl">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 w-full max-w-4xl">
         <Link to="/register" className="bg-white p-6 rounded-2xl shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-1 flex flex-col items-center text-center">
           <div className="bg-purple-100 p-4 rounded-full mb-4">
             <UserPlus className="w-8 h-8 text-samidha-purple" />
@@ -20,21 +28,6 @@ export default function Home() {
           <p className="text-gray-500 text-sm">Register once to get your unique Student ID.</p>
         </Link>
 
-        <Link to="/attendance" className="bg-white p-6 rounded-2xl shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-1 flex flex-col items-center text-center">
-          <div className="bg-blue-100 p-4 rounded-full mb-4">
-            <CheckCircle className="w-8 h-8 text-samidha-blue" />
-          </div>
-          <h2 className="text-xl font-bold mb-2">Mark Attendance</h2>
-          <p className="text-gray-500 text-sm">Use your daily OTP to mark your presence.</p>
-        </Link>
-
-        <Link to="/assignment" className="bg-white p-6 rounded-2xl shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-1 flex flex-col items-center text-center">
-          <div className="bg-green-100 p-4 rounded-full mb-4">
-            <UploadCloud className="w-8 h-8 text-green-600" />
-          </div>
-          <h2 className="text-xl font-bold mb-2">Submit Assignment</h2>
-          <p className="text-gray-500 text-sm">Upload your daily tasks and projects.</p>
-        </Link>
 
         <Link to="/student" className="bg-white p-6 rounded-2xl shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-1 flex flex-col items-center text-center">
           <div className="bg-orange-100 p-4 rounded-full mb-4">
